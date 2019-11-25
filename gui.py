@@ -6,7 +6,7 @@ import numpy as np
 import sittings
 import matplotlib.pyplot as plt
 from matplotlib.collections import LineCollection
-import mne
+# import mne
 from main import plotEEG
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure

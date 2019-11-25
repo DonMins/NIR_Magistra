@@ -1,5 +1,5 @@
-from mne.preprocessing import ICA, create_ecg_epochs
-from mne.viz import plot_alignment, set_3d_view
+# from mne.preprocessing import ICA, create_ecg_epochs
+# from mne.viz import plot_alignment, set_3d_view
 
 from filter import Filter
 import pandas as pd
@@ -7,9 +7,9 @@ import numpy as np
 import sittings
 import matplotlib.pyplot as plt
 from matplotlib.collections import LineCollection
-import mne
+# import mne
 from scipy.signal import hilbert, chirp
-
+from scipy.interpolate import interp1d
 
 def info(DATA_TIME,FD, N,NUMBER_CHANNELS, path):
     print("---------------------INFO About EEG Date--------------------")
@@ -106,6 +106,96 @@ def average(data,time):
 
     return newxMax, yMax, newxMin, yMin
 
+def approximation(data, canal, time):
+    start = time[0] * sittings.FD
+    end = time[1] * sittings.FD
+
+    s = data[start:end, canal]
+    x = np.linspace(time[0], time[1], end - start)
+    q_u = np.zeros(s.shape)
+    q_l = np.zeros(s.shape)
+
+    f = average(s, [0,end-start])
+    u_x = f[0]
+    u_y = f[1]
+
+    l_x = f[2]
+    l_y = f[3]
+
+   # Fit suitable models to the data. Here I am using cubic splines, similarly to the MATLAB example given in the question.
+
+    u_p = interp1d(u_x, u_y, kind='cubic', bounds_error=False, fill_value=0.0)
+    l_p = interp1d(l_x, l_y, kind='cubic', bounds_error=False, fill_value=0.0)
+
+    # Evaluate each model over the domain of (s)
+    for k in range(0, len(s)):
+        q_u[k] = u_p(k)
+        q_l[k] = l_p(k)
+
+    plt.plot(x,s, alpha= 0.4, color ='black', label ='Исходный сигнал')
+    plt.plot(x,q_u, '#0000FF' , label = 'Верняя огибающая')
+    plt.plot(x,q_l, '#008000', label = 'Нижняя огибающая')
+    plt.plot(x,(q_u+q_l)/2,'--', color = 'red', label = 'Среднее')
+    plt.grid()
+    plt.legend()
+    plt.show()
+
+    #----- Тоже самое, но на отдельных графиках ------ #
+    numSamples1 = time[0] * sittings.FD
+    numSamples2 = time[1] * sittings.FD
+    numSamples = numSamples2 - numSamples1
+
+    x = np.linspace(time[0], time[1], numSamples)
+    y = data[numSamples1:numSamples2, canal]
+    plt.plot(x, y, color='black', alpha=0.5)
+
+    plt.subplot(4, 1, 1)
+    plt.plot(x, y, color="black")
+    plt.axvline(x=6, ymin=0, ymax=400, linewidth=1, linestyle='dashed', color='green')
+    plt.axvline(x=7.5, ymin=0, ymax=400, linewidth=1, linestyle='dashed', color='green')
+    plt.title("Фрагмент ЭЭГ сигнала (F7)")
+    plt.xlabel("Время(с)")
+    plt.ylabel("Амплитуда (МкВ)")
+
+    plt.subplot(4, 1, 2)
+    f = average(data[numSamples1:numSamples2, canal], time)
+    #
+    plt.plot(x, y, color="black", alpha=0.5)
+    plt.plot(f[0], (f[1]), 'o', color='blue', markersize=3)
+    plt.plot(f[2], (f[3]), 'o', color='red', markersize=3)
+    plt.axvline(x=6, ymin=0, ymax=400, linewidth=1, linestyle='dashed', color='green')
+    plt.axvline(x=7.5, ymin=0, ymax=400, linewidth=1, linestyle='dashed', color='green')
+    plt.title("Экстремумы сигнала (F7)")
+    plt.xlabel("Время(с)")
+    plt.ylabel("Амплитуда (МкВ)")
+
+    plt.subplots_adjust(wspace=0.1, hspace=0.5)
+
+    plt.subplot(4, 1, 3)
+    f = average(data[numSamples1:numSamples2, canal], time)
+    #
+    plt.plot(x, y, color="black", alpha=0.5)
+    plt.plot(x, q_u,   color='blue', markersize=1)
+    plt.plot(x, q_l,   color='red', markersize=1)
+    plt.axvline(x=6, ymin=0, ymax=400, linewidth=1, linestyle='dashed', color='green')
+    plt.axvline(x=7.5, ymin=0, ymax=400, linewidth=1, linestyle='dashed', color='green')
+    plt.title("Две огибающие,построенные по максимумам и минимумам")
+    plt.xlabel("Время(с)")
+    plt.ylabel("Амплитуда (МкВ)")
+    plt.subplots_adjust(wspace=0.1, hspace=0.5)
+
+    plt.subplot(4, 1, 4)
+    plt.plot(x, y, color='black', alpha=0.5)
+    plt.plot(x, (q_u + q_l) / 2, '--', color='red')
+    plt.axvline(x=6, ymin=0, ymax=400, linewidth=1, linestyle='dashed', color='green')
+    plt.axvline(x=7.5, ymin=0, ymax=400, linewidth=1, linestyle='dashed', color='green')
+    plt.title("Тренд сигнала")
+    plt.xlabel("Время(с)")
+    plt.ylabel("Амплитуда (МкВ)")
+    plt.subplots_adjust(wspace=0.5, hspace=0.5)
+    plt.show()
+
+
 #------- робастое преобразование------------
 def percentile(data,canal,time):
     numSamples = time * sittings.FD
@@ -130,7 +220,7 @@ def plotSingleCanal(data,canal,time):
     numSamples1 = time[0] * sittings.FD
     numSamples2 = time[1] * sittings.FD
     numSamples =numSamples2-numSamples1
-    #x = [i/sittings.FD for i in range(numSamples)]
+
     x = np.linspace(time[0], time[1], numSamples)
     y = data[numSamples1:numSamples2,canal]
     plt.plot(x,y,color ='black' ,alpha=0.5)
@@ -199,7 +289,7 @@ def plotSingleCanal(data,canal,time):
     plt.title("Тренд сигнала")
     plt.xlabel("Время(с)")
     plt.ylabel("Амплитуда (МкВ)")
-    plt.subplots_adjust(wspace=0.1, hspace=0.5)
+    plt.subplots_adjust(wspace=0.5, hspace=0.5)
 
     # minY= np.percentile(y, q=[10, 90])[0]
     # maxY= np.percentile(y, q=[10, 90])[1]
@@ -297,7 +387,9 @@ if __name__ == "__main__":
     # plt.grid()
     #raw = EegChart(pd.read_csv(path, sep=" ", header=None, skiprows=2),NUMBER_CHANNELS,int(N),FD)
     # # raw2 = EegChart(pd.read_csv(path, sep=" ", header=None, skiprows=2),NUMBER_CHANNELS,int(N),FD)
-    plt.show()
-    plotSingleCanal(data, 3, [4,8])
+    # plt.show()
+    # plotSingleCanal(data, 3, [4,8])
+
+    approximation(data,3, [4,8])
 
 
