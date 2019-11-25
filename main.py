@@ -252,8 +252,8 @@ def getModa(s,time): # возвращает моду из набора данн�
 
         # Fit suitable models to the data. Here I am using cubic splines, similarly to the MATLAB example given in the question.
 
-        u_p = interp1d(u_x, u_y, kind='cubic', bounds_error=False, fill_value=0.0)
-        l_p = interp1d(l_x, l_y, kind='cubic', bounds_error=False, fill_value=0.0)
+        u_p = interp1d(u_x, u_y, kind='cubic', bounds_error=False, fill_value=0)
+        l_p = interp1d(l_x, l_y, kind='cubic', bounds_error=False, fill_value=0)
 
         # Evaluate each model over the domain of (s)
         for k in range(0, len(s)):
@@ -291,6 +291,20 @@ def getEmpiricalFashion(data, canal, time):
     x = np.linspace(time[0], time[1], end - start)
 
     st = data[start:end, canal]
+
+    plt.subplot(1, 2, 1)
+    plt.grid()
+    plt.plot(x, st, label = "исходный сигнал")
+    plt.legend()
+
+    plt.subplot(1, 2, 2)
+    spect  = SpectrFurie(st)
+    plt.plot(spect[0], spect[1], color='black')
+    plt.title("Фурье-спектр")
+    plt.grid()
+    plt.xlabel("Частота (Гц)")
+    plt.ylabel("Амплитуда (МкВ)")
+    plt.show()
 
 
     plt.subplot(1, 2, 1)
@@ -378,8 +392,26 @@ def getEmpiricalFashion(data, canal, time):
     plt.ylabel("Амплитуда (МкВ)")
     plt.show()
 
-    plt.plot(x, (h1+h2+h3), color = 'black')
-    plt.plot(x, st, color = 'red')
+    plt.plot(x, (h1+h2+h3), color = 'black', label = "Отфильрованный сигнал")
+    plt.plot(x, st, color = 'red',  label = "Сигнал с наложением артефакта")
+    path = "EEG_Data\\MAN\\20-33\\" + str("1") + ".txt"
+    DATA_TIME = 40
+    FD = 200
+    N = DATA_TIME / (1 / FD)
+    data = np.array(pd.read_csv(path, sep=" ", header=None, skiprows=2))
+    plt.plot(x, data[800:1600, 3], color = 'green',  label = "Сигнал без наложения артефакта")
+
+    minY = np.percentile(st, q=[10, 80])[0]
+    maxY = np.percentile(st, q=[10, 80])[1]
+
+    for i in range(len(st)):
+        if st[i] >= maxY:
+            st[i] = maxY
+        if st[i] <= minY:
+            st[i] = minY
+        continue
+    plt.plot(x, st, color='blue', label="Отфильрованный сигнал c помощью робастого преобразовния")
+    plt.legend()
     plt.grid()
     plt.show()
 
@@ -527,7 +559,7 @@ def plotSingleCanal(data, canal, time):
 if __name__ == "__main__":
     # ---------------Данные инициализации-----------------------------------
 
-    path = "EEG_Data\\MAN\\20-33\\" + str("bad") + ".txt"
+    path = "EEG_Data\\MAN\\20-33\\" + str("1") + ".txt"
     DATA_TIME = 40
     FD = 200
     N = DATA_TIME / (1 / FD)
