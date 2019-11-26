@@ -7,6 +7,7 @@ import numpy as np
 import sittings
 import matplotlib.pyplot as plt
 from matplotlib.collections import LineCollection
+from scipy.interpolate import CubicSpline
 # import mne
 from scipy.signal import hilbert, chirp
 from scipy.interpolate import interp1d
@@ -90,8 +91,7 @@ def average(data, time):
     x = np.linspace(time[0], time[1], len(data))
     yMax = []
     newxMax = []
-    arrayY=0
-
+    arrayY = 0
 
     yMin = []
     newxMin = []
@@ -111,7 +111,7 @@ def average(data, time):
             newxMin.append(x[j])
             yMin.append(i2)
 
-    return newxMax, yMax, newxMin, yMin , arrayY
+    return newxMax, yMax, newxMin, yMin, arrayY
 
 
 def approximation(data, canal, time):
@@ -204,10 +204,11 @@ def approximation(data, canal, time):
     plt.show()
 
     h1 = s - ((q_u + q_l) / 2)
-    plt.plot(x,s)
+    plt.plot(x, s)
     plt.grid()
     print(f[4])
     plt.show()
+
 
 def isModa(data):
     numberOfExtremes = 0
@@ -223,23 +224,25 @@ def isModa(data):
         if (((i2) >= (i1)) and ((i2) >= (i3))) or (((i2) <= (i1)) and ((i2) <= (i3))):
             numberOfExtremes += 1
 
-        if (i1<0 and i2>=0) or (i1>=0 and i2<0):
-            numberOfIntersections+=1
-    if (numberOfExtremes - numberOfIntersections<=1):
+        if (i1 < 0 and i2 >= 0) or (i1 >= 0 and i2 < 0):
+            numberOfIntersections += 1
+    if (numberOfExtremes - numberOfIntersections <= 1):
         return True
     return False
 
+
 def isCorrectAvg(avg):
-    if (-0.5<np.mean(avg)<0.5):
-            return True
+    if (-0.5 < np.mean(avg) < 0.5):
+        return True
     return False
 
-def getModa(s,time): # возвращает моду из набора данных
+
+def getModa(s, time):  # возвращает моду из набора данных
     start = time[0] * sittings.FD
     end = time[1] * sittings.FD
     m = 0
     h1 = []
-    while (m<5):
+    while (m < 5):
         q_u = np.zeros(s.shape)
         q_l = np.zeros(s.shape)
 
@@ -252,8 +255,11 @@ def getModa(s,time): # возвращает моду из набора данн�
 
         # Fit suitable models to the data. Here I am using cubic splines, similarly to the MATLAB example given in the question.
 
-        u_p = interp1d(u_x, u_y, kind='cubic', bounds_error=False, fill_value=0)
-        l_p = interp1d(l_x, l_y, kind='cubic', bounds_error=False, fill_value=0)
+        # u_p = interp1d(u_x, u_y, kind='cubic', bounds_error=False, fill_value=0)
+        # l_p = interp1d(l_x, l_y, kind='cubic', bounds_error=False, fill_value=0)
+
+        u_p = CubicSpline(u_x, u_y, bc_type='clamped')
+        l_p = CubicSpline(l_x, l_y, bc_type='clamped')
 
         # Evaluate each model over the domain of (s)
         for k in range(0, len(s)):
@@ -261,13 +267,15 @@ def getModa(s,time): # возвращает моду из набора данн�
             q_l[k] = l_p(k)
 
         avg = (q_u + q_l) / 2
-        h1 = s - avg #  1 приближение к моде
-        if (isModa(h1)==True and isCorrectAvg(avg) ==True):
+        h1 = s - avg  # 1 приближение к моде
+        h1[len(h1) - 1] = s[len(s) - 1]
+        if (isModa(h1) == True and isCorrectAvg(avg) == True):
             break
         else:
-            s=h1
-        m+=1
+            s = h1
+        m += 1
     return h1
+
 
 def SpectrFurie(data):
     time_step = 0.005
@@ -281,7 +289,7 @@ def SpectrFurie(data):
         if freqs[i] >= 0 and freqs[i] <= 35:
             newX.append(freqs[i])
             newY.append(ps[i])
-    return newX , newY
+    return newX, newY
 
 
 def getEmpiricalFashion(data, canal, time):
@@ -292,127 +300,141 @@ def getEmpiricalFashion(data, canal, time):
 
     st = data[start:end, canal]
 
-    plt.subplot(1, 2, 1)
+    plt.subplot(2, 2, 1)
     plt.grid()
-    plt.plot(x, st, label = "исходный сигнал")
+    plt.plot(x, st, label="Исходный сигнал", color='black')
+    plt.xlabel("Время(с)")
+    plt.ylabel("Амплитуда (МкВ)")
     plt.legend()
 
-    plt.subplot(1, 2, 2)
-    spect  = SpectrFurie(st)
+    plt.subplot(2, 2, 2)
+    spect = SpectrFurie(st)
     plt.plot(spect[0], spect[1], color='black')
-    plt.title("Фурье-спектр")
+    plt.title("Спектр исходного сигнала")
     plt.grid()
     plt.xlabel("Частота (Гц)")
     plt.ylabel("Амплитуда (МкВ)")
     plt.show()
 
-
-    plt.subplot(1, 2, 1)
+    plt.subplot(2, 2, 1)
     h1 = getModa(s, time)
     plt.grid()
-    plt.plot(x, st, label = "исходный сигнал")
-    plt.plot(x, h1, label = "мода 1 ")
+    plt.plot(x, st, label="Исходный сигнал", color='black', alpha = 0.5)
+    plt.plot(x, h1, label="Мода 1", color='red')
+    plt.xlabel("Время(с)")
+    plt.ylabel("Амплитуда (МкВ)")
     plt.legend()
 
-    plt.subplot(1, 2, 2)
-    spect  = SpectrFurie(h1)
+    plt.subplot(2, 2, 2)
+    spect = SpectrFurie(h1)
     plt.plot(spect[0], spect[1], color='black')
-    plt.title("Фурье-спектр")
+    plt.title("Cпектр 1 моды")
     plt.grid()
     plt.xlabel("Частота (Гц)")
     plt.ylabel("Амплитуда (МкВ)")
     plt.show()
     r1 = s - h1
 
-
-    plt.subplot(1, 2, 1)
+    plt.subplot(2, 2, 1)
     h2 = getModa(r1, time)
-    plt.plot(x, st, label="исходный сигнал")
-    plt.plot(x, h2, label="мода 2 ")
+    plt.plot(x, st, label="Исходный сигнал", color='black', alpha = 0.5)
+    plt.plot(x, h2, label="Мода 2", color='red')
+    plt.xlabel("Время(с)")
+    plt.ylabel("Амплитуда (МкВ)")
     plt.legend()
     plt.grid()
 
-    plt.subplot(1, 2, 2)
+    plt.subplot(2, 2, 2)
     spect = SpectrFurie(h2)
     plt.plot(spect[0], spect[1], color='black')
-    plt.title("Фурье-спектр")
+    plt.title("Спектр 2 моды")
     plt.grid()
     plt.xlabel("Частота (Гц)")
     plt.ylabel("Амплитуда (МкВ)")
     plt.show()
     r2 = r1 - h2
 
-
-    plt.subplot(1, 2, 1)
+    plt.subplot(2, 2, 1)
     h3 = getModa(r2, time)
-    plt.plot(x, st, label="исходный сигнал")
-    plt.plot(x, h3, label="мода 3 ")
+    plt.plot(x, st, label="Исходный сигнал", color='black',alpha = 0.5)
+    plt.plot(x, h3, label="Мода 3", color='red')
+    plt.xlabel("Время(с)")
+    plt.ylabel("Амплитуда (МкВ)")
     plt.legend()
     plt.grid()
-    plt.subplot(1, 2, 2)
+    plt.subplot(2, 2, 2)
     spect = SpectrFurie(h3)
     plt.plot(spect[0], spect[1], color='black')
-    plt.title("Фурье-спектр")
+    plt.title("Cпектр 3 моды")
     plt.grid()
     plt.xlabel("Частота (Гц)")
     plt.ylabel("Амплитуда (МкВ)")
     plt.show()
     r3 = r2 - h3
 
-    plt.subplot(1, 2, 1)
+    plt.subplot(2, 2, 1)
     h4 = getModa(r3, time)
-    plt.plot(x, st, label="исходный сигнал")
-    plt.plot(x, h4, label="мода 4 ")
+    plt.plot(x, st, label="Исходный сигнал", color='black',alpha = 0.5)
+    plt.plot(x, h4, label="Мода 4", color='red')
+    plt.xlabel("Время(с)")
+    plt.ylabel("Амплитуда (МкВ)")
     plt.legend()
     plt.grid()
 
-    plt.subplot(1, 2, 2)
+    plt.subplot(2, 2, 2)
     spect = SpectrFurie(h4)
     plt.plot(spect[0], spect[1], color='black')
-    plt.title("Фурье-спектр")
+    plt.title("Спектр 4 моды")
     plt.grid()
     plt.xlabel("Частота (Гц)")
     plt.ylabel("Амплитуда (МкВ)")
     plt.show()
     r4 = r3 - h4
 
-
-    plt.subplot(1, 2, 1)
+    plt.subplot(2, 2, 1)
     h5 = getModa(r4, time)
-    plt.plot(x, st, label="исходный сигнал")
-    plt.plot(x, h5, label="мода 5 ")
+    plt.plot(x, st, label="Исходный сигнал", color='black',alpha = 0.5)
+    plt.plot(x, h5, label="Мода 5 ", color='red')
+    plt.xlabel("Время(с)")
+    plt.ylabel("Амплитуда (МкВ)")
     plt.legend()
     plt.grid()
-    plt.subplot(1, 2, 2)
+    plt.subplot(2, 2, 2)
     spect = SpectrFurie(h5)
     plt.plot(spect[0], spect[1], color='black')
-    plt.title("Фурье-спектр")
+    plt.title("Cпектр 5 моды")
     plt.grid()
     plt.xlabel("Частота (Гц)")
     plt.ylabel("Амплитуда (МкВ)")
     plt.show()
 
-    plt.plot(x, (h1+h2+h3), color = 'black', label = "Отфильрованный сигнал")
-    plt.plot(x, st, color = 'red',  label = "Сигнал с наложением артефакта")
+    plt.plot(x, (h1 + h2 + h3),  label="Отфильрованный сигнал", color = 'red')
+    plt.plot(x, st, label="Сигнал с наложением артефакта", alpha = 0.5, color = 'black')
+    plt.xlabel("Время(с)")
+    plt.axvline(x=6, ymin=0, ymax=400, linewidth=1, linestyle='dashed', color='green')
+    plt.axvline(x=7.5, ymin=0, ymax=400, linewidth=1, linestyle='dashed', color='green')
+    plt.ylabel("Амплитуда (МкВ)")
     path = "EEG_Data\\MAN\\20-33\\" + str("1") + ".txt"
     DATA_TIME = 40
     FD = 200
     N = DATA_TIME / (1 / FD)
     data = np.array(pd.read_csv(path, sep=" ", header=None, skiprows=2))
-    plt.plot(x, data[800:1600, 3], color = 'green',  label = "Сигнал без наложения артефакта")
-
-    minY = np.percentile(st, q=[10, 80])[0]
-    maxY = np.percentile(st, q=[10, 80])[1]
-
-    for i in range(len(st)):
-        if st[i] >= maxY:
-            st[i] = maxY
-        if st[i] <= minY:
-            st[i] = minY
-        continue
-    plt.plot(x, st, color='blue', label="Отфильрованный сигнал c помощью робастого преобразовния")
+    maxel = max(data[:, 3])
+    data[:, 3] = data[:, 3] / maxel
+    plt.plot(x, data[800:1600, 3], label="Сигнал без наложения артефакта" ,color = 'blue')
+    #
+    # minY = np.percentile(st, q=[10, 80])[0]
+    # maxY = np.percentile(st, q=[10, 80])[1]
+    #
+    # for i in range(len(st)):
+    #     if st[i] >= maxY:
+    #         st[i] = maxY
+    #     if st[i] <= minY:
+    #         st[i] = minY
+    #     continue
+    # plt.plot(x, st, color='blue', label="Отфильрованный сигнал c помощью робастого преобразовния")
     plt.legend()
-    plt.grid()
+    # plt.grid()
     plt.show()
 
 
@@ -571,14 +593,14 @@ if __name__ == "__main__":
     # ------------------------------------------------------------------------
 
     # -------------------Фильтрация-------------------------------------------
-    data[1200:1250, :] = data[1200:1250, :] + 100
-    data[1250:1300, :] = data[1250:1300, :] + 200
-    data[1300:1350, :] = data[1300:1350, :] + 280
-    data[1350:1400, :] = data[1350:1400, :] + 320
-
-    data[1400:1450, :] = data[1400:1450, :] + 300
-    data[1450:1500, :] = data[1450:1500, :] + 130
-    data[1550:1600, :] = data[1550:1600, :] + 50
+    # data[1200:1250, :] = data[1200:1250, :] + 100
+    # data[1250:1300, :] = data[1250:1300, :] + 200
+    # data[1300:1350, :] = data[1300:1350, :] + 280
+    # data[1350:1400, :] = data[1350:1400, :] + 320
+    #
+    # data[1400:1450, :] = data[1400:1450, :] + 300
+    # data[1450:1500, :] = data[1450:1500, :] + 130
+    # data[1550:1600, :] = data[1550:1600, :] + 50
 
     # plotEEG(data,"ЭЭГ сигнал с артефактом (движение глаз)",10)
     # for i in range(1,17):
@@ -605,5 +627,6 @@ if __name__ == "__main__":
     # plotSingleCanal(data, 3, [4,8])
 
     #approximation(data,3, [4,8])
+
 
     getEmpiricalFashion(data, 3, [4, 8])
