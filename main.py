@@ -242,7 +242,7 @@ def getModa(s, time):  # возвращает моду из набора дан�
     end = time[1] * sittings.FD
     m = 0
     h1 = []
-    while (m < 5):
+    while (m < 10):
         q_u = np.zeros(s.shape)
         q_l = np.zeros(s.shape)
 
@@ -269,6 +269,7 @@ def getModa(s, time):  # возвращает моду из набора дан�
         avg = (q_u + q_l) / 2
         h1 = s - avg  # 1 приближение к моде
         h1[len(h1) - 1] = s[len(s) - 1]
+        h1[0] = s[0]
         if (isModa(h1) == True and isCorrectAvg(avg) == True):
             break
         else:
@@ -286,9 +287,9 @@ def SpectrFurie(data):
     newX = []
     newY = []
     for i in idx:
-        if freqs[i] >= 0 and freqs[i] <= 35:
-            newX.append(freqs[i])
-            newY.append(ps[i])
+        # if freqs[i] >= 0 and freqs[i] <= 100:
+             newX.append(freqs[i])
+             newY.append(ps[i])
     return newX, newY
 
 
@@ -302,7 +303,17 @@ def getEmpiricalFashion(data, canal, time):
 
     plt.subplot(2, 2, 1)
     plt.grid()
+    path = "EEG_Data\\MAN\\20-33\\" + str("1") + ".txt"
+    DATA_TIME = 40
+    FD = 200
+    N = DATA_TIME / (1 / FD)
+    datas = np.array(pd.read_csv(path, sep=" ", header=None, skiprows=2))
+    maxel = max(datas[:,3])
+    datas[:,3] =   datas[:,3]/maxel
+
+
     plt.plot(x, st, label="Исходный сигнал", color='black')
+    plt.plot(x, datas[start:end, canal], label="Исходный сигнал", color='green')
     plt.xlabel("Время(с)")
     plt.ylabel("Амплитуда (МкВ)")
     plt.legend()
@@ -393,7 +404,7 @@ def getEmpiricalFashion(data, canal, time):
 
     plt.subplot(2, 2, 1)
     h5 = getModa(r4, time)
-    plt.plot(x, st, label="Исходный сигнал", color='black',alpha = 0.5)
+    #plt.plot(x, st, label="Исходный сигнал", color='black',alpha = 0.5)
     plt.plot(x, h5, label="Мода 5 ", color='red')
     plt.xlabel("Время(с)")
     plt.ylabel("Амплитуда (МкВ)")
@@ -408,8 +419,10 @@ def getEmpiricalFashion(data, canal, time):
     plt.ylabel("Амплитуда (МкВ)")
     plt.show()
 
-    plt.plot(x, (h1 + h2 + h3),  label="Отфильрованный сигнал", color = 'red')
-    plt.plot(x, st, label="Сигнал с наложением артефакта", alpha = 0.5, color = 'black')
+    plt.subplot(3, 1, 1)
+    plt.plot(x, st, label="Сигнал с наложением артефакта", alpha=0.5, color='black')
+    plt.subplot(3, 1, 2)
+    plt.plot(x, (h1 +h2+ h3),  label="Отфильрованный сигнал", color = 'red')
     plt.xlabel("Время(с)")
     plt.axvline(x=6, ymin=0, ymax=400, linewidth=1, linestyle='dashed', color='green')
     plt.axvline(x=7.5, ymin=0, ymax=400, linewidth=1, linestyle='dashed', color='green')
@@ -421,7 +434,12 @@ def getEmpiricalFashion(data, canal, time):
     data = np.array(pd.read_csv(path, sep=" ", header=None, skiprows=2))
     maxel = max(data[:, 3])
     data[:, 3] = data[:, 3] / maxel
+    plt.subplot(3, 1, 3)
     plt.plot(x, data[800:1600, 3], label="Сигнал без наложения артефакта" ,color = 'blue')
+    plt.subplot(3, 1, 1)
+    plt.plot(x, st, label="Сигнал с наложением артефакта", alpha=0.5, color='black')
+    plt.plot(x, data[800:1600, 3], label="Сигнал без наложения артефакта" ,color = 'blue')
+
     #
     # minY = np.percentile(st, q=[10, 80])[0]
     # maxY = np.percentile(st, q=[10, 80])[1]
@@ -628,5 +646,24 @@ if __name__ == "__main__":
 
     #approximation(data,3, [4,8])
 
+    from random import gauss
+    from random import seed
+
+
+    # seed random number generator
+    seed(1)
+    # create white noise series
+    # series = [gauss(0.0, 1000.0) for i in range(len(data[:,3] ))]
+    # data[:,3] =   data[:,3] + series
+
+    Fs = len(data[:, 3])  # sampling rate
+    Ts = 1.0 / Fs  # sampling interval
+    t = np.arange(0, 1, Ts)  # time vector
+
+    ff = 20  # frequency of the signal
+    y = np.sin(2 * np.pi * ff * t)
+
+    maxel = max(data[:, 3])
+    data[:, 3] = data[:, 3] / maxel + y
 
     getEmpiricalFashion(data, 3, [4, 8])
