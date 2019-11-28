@@ -458,10 +458,32 @@ def getEmpiricalFashion(data, canal, time):
 
 # ------- робастое преобразование------------
 def percentile(data, canal, time):
-    numSamples = time * sittings.FD
-    x = [i for i in range(numSamples)]
-    y = data[0:numSamples, canal]
-    plt.plot(x, y, color='black', alpha=0.5)
+    start = time[0] * sittings.FD
+    end = time[1] * sittings.FD
+    y = data[start:end, canal]
+    x = np.linspace(time[0], time[1], end - start)
+
+
+    plt.subplot(3, 1, 2)
+    plt.plot(x, y, color='black')
+    plt.title("Фрагмент исходного сигнала (F7) с наложением артефакта")
+    plt.axvline(x=6, ymin=0, ymax=400, linewidth=1, linestyle='dashed', color='green')
+    plt.axvline(x=7.5, ymin=0, ymax=400, linewidth=1, linestyle='dashed', color='green')
+    plt.xlabel("Время (c)")
+    plt.ylabel("Амплитуда (МкВ)")
+
+    path = "EEG_Data\\MAN\\20-33\\" + str("2") + ".txt"
+    DATA_TIME = 40
+    FD = 200
+    N = DATA_TIME / (1 / FD)
+    st = np.array(pd.read_csv(path, sep=" ", header=None, skiprows=2))
+    plt.subplot(3, 1, 1)
+    plt.plot(x, st[start:end, canal], color='black')
+    plt.axvline(x=6, ymin=0, ymax=400, linewidth=1, linestyle='dashed', color='green')
+    plt.axvline(x=7.5, ymin=0, ymax=400, linewidth=1, linestyle='dashed', color='green')
+    plt.title("Фрагмент исходного сигнала (F7)")
+    plt.xlabel("Время (c)")
+    plt.ylabel("Амплитуда (МкВ)")
 
     minY = np.percentile(y, q=[10, 90])[0]
     maxY = np.percentile(y, q=[10, 90])[1]
@@ -473,7 +495,16 @@ def percentile(data, canal, time):
             y[i] = minY
         continue
 
-    plt.plot(x, y)
+    plt.subplot(3, 1, 3)
+    plt.plot(x, y, color='black')
+    plt.title("Фильтрация методом робастного преобразования")
+    plt.xlabel("Время (c)")
+    plt.ylabel("Амплитуда (МкВ)")
+    plt.axvline(x=6, ymin=0, ymax=400, linewidth=1, linestyle='dashed', color='green')
+    plt.axvline(x=7.5, ymin=0, ymax=400, linewidth=1, linestyle='dashed', color='green')
+    plt.subplots_adjust(wspace=0.5, hspace=0.5)
+
+    plt.show()
 
 
 # -------------------------------------
@@ -599,7 +630,7 @@ def plotSingleCanal(data, canal, time):
 if __name__ == "__main__":
     # ---------------Данные инициализации-----------------------------------
 
-    path = "EEG_Data\\MAN\\20-33\\" + str("1") + ".txt"
+    path = "EEG_Data\\MAN\\20-33\\" + str("2") + ".txt"
     DATA_TIME = 40
     FD = 200
     N = DATA_TIME / (1 / FD)
@@ -611,14 +642,15 @@ if __name__ == "__main__":
     # ------------------------------------------------------------------------
 
     # -------------------Фильтрация-------------------------------------------
-    # data[1200:1250, :] = data[1200:1250, :] + 100
-    # data[1250:1300, :] = data[1250:1300, :] + 200
-    # data[1300:1350, :] = data[1300:1350, :] + 280
-    # data[1350:1400, :] = data[1350:1400, :] + 320
-    #
-    # data[1400:1450, :] = data[1400:1450, :] + 300
-    # data[1450:1500, :] = data[1450:1500, :] + 130
-    # data[1550:1600, :] = data[1550:1600, :] + 50
+    # st = data[:,3]
+    data[1200:1250, :] = data[1200:1250, :] + 100
+    data[1250:1300, :] = data[1250:1300, :] + 200
+    data[1300:1350, :] = data[1300:1350, :] + 280
+    data[1350:1400, :] = data[1350:1400, :] + 320
+
+    data[1400:1450, :] = data[1400:1450, :] + 300
+    data[1450:1500, :] = data[1450:1500, :] + 130
+    data[1550:1600, :] = data[1550:1600, :] + 50
 
     # plotEEG(data,"ЭЭГ сигнал с артефактом (движение глаз)",10)
     # for i in range(1,17):
@@ -647,23 +679,24 @@ if __name__ == "__main__":
     #approximation(data,3, [4,8])
 
     from random import gauss
-    from random import seed
 
 
     # seed random number generator
-    seed(1)
+
     # create white noise series
     # series = [gauss(0.0, 1000.0) for i in range(len(data[:,3] ))]
     # data[:,3] =   data[:,3] + series
 
-    Fs = len(data[:, 3])  # sampling rate
-    Ts = 1.0 / Fs  # sampling interval
-    t = np.arange(0, 1, Ts)  # time vector
+    # Fs = len(data[:, 3])  # sampling rate
+    # Ts = 1.0 / Fs  # sampling interval
+    # t = np.arange(0, 1, Ts)  # time vector
+    #
+    # ff = 20  # frequency of the signal
+    # y = np.sin(2 * np.pi * ff * t)
+    #
+    # maxel = max(data[:, 3])
+    # data[:, 3] = data[:, 3] / maxel + y
 
-    ff = 20  # frequency of the signal
-    y = np.sin(2 * np.pi * ff * t)
+    #getEmpiricalFashion(data, 3, [4, 8])
 
-    maxel = max(data[:, 3])
-    data[:, 3] = data[:, 3] / maxel + y
-
-    getEmpiricalFashion(data, 3, [4, 8])
+    percentile(data, 3, [4, 8])
