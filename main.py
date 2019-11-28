@@ -332,7 +332,7 @@ def getEmpiricalFashion(data, canal, time):
     plt.ylabel("Амплитуда (МкВ)")
     wavelet = 'morl'
 
-    ax = scg.cws(x, st, scales=range(1,2*len(x)), wavelet=wavelet,yaxis='frequency',cscale = 'linear',
+    ax = scg.cws(x, st, scales=range(1,int(len(x)/2)), wavelet=wavelet,yaxis='frequency',
                  figsize=(14, 3), cmap="jet",  ylabel='Период (год)', xlabel="Время [Год]",
                  title='Вейвлет-преобразование временного ряда\n(спектр мощности)')
 
@@ -355,11 +355,9 @@ def getEmpiricalFashion(data, canal, time):
     plt.xlabel("Частота (Гц)")
     plt.ylabel("Амплитуда (МкВ)")
 
-    ax = scg.cws(x, h1, scales=pywt.scale2frequency(wavelet, x)/0.02, wavelet=wavelet, yaxis='frequency', cscale='linear',
+    ax = scg.cws(x, h1, scales=range(1, int(len(x) / 2)), wavelet=wavelet, yaxis='frequency',
                  figsize=(14, 3), cmap="jet", ylabel='Период (год)', xlabel="Время [Год]",
                  title='Вейвлет-преобразование временного ряда\n(спектр мощности)')
-    ticks = ax.set_yticks([2, 4, 8, 16, 32])
-    ticks = ax.set_yticklabels([2, 4, 8, 16, 32])
 
     plt.show()
     r1 = s - h1
@@ -381,11 +379,9 @@ def getEmpiricalFashion(data, canal, time):
     plt.xlabel("Частота (Гц)")
     plt.ylabel("Амплитуда (МкВ)")
 
-    ax = scg.cws(x, h2,scales=pywt.scale2frequency(wavelet, x)/0.02, wavelet=wavelet, yaxis='frequency', cscale='linear',
+    ax = scg.cws(x, h2, scales=range(1, int(len(x) / 2)), wavelet=wavelet, yaxis='frequency',
                  figsize=(14, 3), cmap="jet", ylabel='Период (год)', xlabel="Время [Год]",
                  title='Вейвлет-преобразование временного ряда\n(спектр мощности)')
-    ticks = ax.set_yticks([2, 4, 8, 16, 32])
-    ticks = ax.set_yticklabels([2, 4, 8, 16, 32])
 
     plt.show()
     r2 = r1 - h2
@@ -406,11 +402,9 @@ def getEmpiricalFashion(data, canal, time):
     plt.xlabel("Частота (Гц)")
     plt.ylabel("Амплитуда (МкВ)")
 
-    ax = scg.cws(x, h3, scales=arange(1, len(h3)), wavelet=wavelet, yaxis='frequency', cscale='linear',
+    ax = scg.cws(x, h3, scales=range(1, int(len(x) / 2)), wavelet=wavelet, yaxis='frequency',
                  figsize=(14, 3), cmap="jet", ylabel='Период (год)', xlabel="Время [Год]",
                  title='Вейвлет-преобразование временного ряда\n(спектр мощности)')
-    ticks = ax.set_yticks([2, 4, 8, 16, 32])
-    ticks = ax.set_yticklabels([2, 4, 8, 16, 32])
 
     plt.show()
     r3 = r2 - h3
@@ -432,11 +426,9 @@ def getEmpiricalFashion(data, canal, time):
     plt.xlabel("Частота (Гц)")
     plt.ylabel("Амплитуда (МкВ)")
 
-    ax = scg.cws(x, h4, scales=arange(1, len(h4)), wavelet=wavelet, yaxis='frequency', cscale='linear',
+    ax = scg.cws(x, h4, scales=range(1, int(len(x) / 2)), wavelet=wavelet, yaxis='frequency',
                  figsize=(14, 3), cmap="jet", ylabel='Период (год)', xlabel="Время [Год]",
                  title='Вейвлет-преобразование временного ряда\n(спектр мощности)')
-    ticks = ax.set_yticks([2, 4, 8, 16, 32])
-    ticks = ax.set_yticklabels([2, 4, 8, 16, 32])
 
     plt.show()
     r4 = r3 - h4
@@ -457,11 +449,9 @@ def getEmpiricalFashion(data, canal, time):
     plt.xlabel("Частота (Гц)")
     plt.ylabel("Амплитуда (МкВ)")
 
-    ax = scg.cws(x, h5, scales=arange(1, len(h5)), wavelet=wavelet, yaxis='frequency', cscale='linear',
-                 figsize=(14, 3), cmap="jet", ylabel='Период (год)', xlabel="Время [Год]",
+    ax = scg.cws(x, h5, scales=range(1,int(len(x)/2)), wavelet=wavelet,yaxis='frequency',
+                 figsize=(14, 3), cmap="jet",  ylabel='Период (год)', xlabel="Время [Год]",
                  title='Вейвлет-преобразование временного ряда\n(спектр мощности)')
-    ticks = ax.set_yticks([2, 4, 8, 16, 32])
-    ticks = ax.set_yticklabels([2, 4, 8, 16, 32])
 
     plt.show()
 
