@@ -291,11 +291,9 @@ def SpectrFurie(data):
     newY = []
     for i in idx:
         # if freqs[i] >= 0 and freqs[i] <= 100:
-             newX.append(freqs[i])
-             newY.append(ps[i])
+        newX.append(freqs[i])
+        newY.append(ps[i])
     return newX, newY
-
-
 
 
 def getEmpiricalFashion(data, canal, time):
@@ -305,191 +303,211 @@ def getEmpiricalFashion(data, canal, time):
     x = np.linspace(time[0], time[1], end - start)
 
     st = data[start:end, canal]
+    fig, (ax1, ax2, ax3) = plt.subplots(3, 1)
 
-    plt.subplot(2, 2, 1)
-    plt.grid()
     path = "EEG_Data\\MAN\\20-33\\" + str("1") + ".txt"
     DATA_TIME = 40
     FD = 200
     N = DATA_TIME / (1 / FD)
     datas = np.array(pd.read_csv(path, sep=" ", header=None, skiprows=2))
-    maxel = max(datas[:,3])
-    datas[:,3] =   datas[:,3]/maxel
+    maxel = max(datas[:, 3])
+    datas[:, 3] = datas[:, 3] / maxel
+    spect = SpectrFurie(st)
 
-
+    ax1 = plt.subplot(3, 1,1)
     plt.plot(x, st, label="Исходный сигнал", color='black')
-    plt.plot(x, datas[start:end, canal], label="Исходный сигнал", color='green')
     plt.xlabel("Время(с)")
     plt.ylabel("Амплитуда (МкВ)")
-    plt.legend()
+    plt.grid()
 
-    plt.subplot(2, 2, 2)
+    ax2 = plt.subplot(3, 1,2)
+    wavelet = 'morl'
+    scg.cws(x, st, scales=range(1, int(len(x) / 2)),
+                  wavelet=wavelet,
+                  yaxis='frequency',
+                  ylabel='Частота(Гц)',
+                  xlabel="Время(с)",
+                  cbar=None,
+                  ax=ax2,
+                  title='Вейвлет-спектр')
+    ax2.set_yticks([0.5, 1, 2, 5, 10, 25, 50, 100])
+    ax2.set_yticklabels([0.5, 1, 2, 5, 10, 25, 50, 100])
+
+    ax3 = plt.subplot(3, 1, 3)
     spect = SpectrFurie(st)
     plt.plot(spect[0], spect[1], color='black')
     plt.title("Спектр исходного сигнала")
     plt.grid()
     plt.xlabel("Частота (Гц)")
     plt.ylabel("Амплитуда (МкВ)")
-    wavelet = 'morl'
 
-    ax = scg.cws(x, st, scales=range(1,int(len(x)/2)), wavelet=wavelet,yaxis='frequency',
-                 figsize=(14, 3), cmap="jet",  ylabel='Период (год)', xlabel="Время [Год]",
-                 title='Вейвлет-преобразование временного ряда\n(спектр мощности)')
+
 
     plt.show()
 
-    plt.subplot(2, 2, 1)
-    h1 = getModa(s, time)
-    plt.grid()
-    plt.plot(x, st, label="Исходный сигнал", color='black', alpha = 0.5)
-    plt.plot(x, h1, label="Мода 1", color='red')
-    plt.xlabel("Время(с)")
-    plt.ylabel("Амплитуда (МкВ)")
-    plt.legend()
-
-    plt.subplot(2, 2, 2)
-    spect = SpectrFurie(h1)
-    plt.plot(spect[0], spect[1], color='black')
-    plt.title("Cпектр 1 моды")
-    plt.grid()
-    plt.xlabel("Частота (Гц)")
-    plt.ylabel("Амплитуда (МкВ)")
-
-    ax = scg.cws(x, h1, scales=range(1, int(len(x) / 2)), wavelet=wavelet, yaxis='frequency',
-                 figsize=(14, 3), cmap="jet", ylabel='Период (год)', xlabel="Время [Год]",
-                 title='Вейвлет-преобразование временного ряда\n(спектр мощности)')
-
-    plt.show()
-    r1 = s - h1
-
-    plt.subplot(2, 2, 1)
-    h2 = getModa(r1, time)
-    plt.plot(x, st, label="Исходный сигнал", color='black', alpha = 0.5)
-    plt.plot(x, h2, label="Мода 2", color='red')
-    plt.xlabel("Время(с)")
-    plt.ylabel("Амплитуда (МкВ)")
-    plt.legend()
-    plt.grid()
-
-    plt.subplot(2, 2, 2)
-    spect = SpectrFurie(h2)
-    plt.plot(spect[0], spect[1], color='black')
-    plt.title("Спектр 2 моды")
-    plt.grid()
-    plt.xlabel("Частота (Гц)")
-    plt.ylabel("Амплитуда (МкВ)")
-
-    ax = scg.cws(x, h2, scales=range(1, int(len(x) / 2)), wavelet=wavelet, yaxis='frequency',
-                 figsize=(14, 3), cmap="jet", ylabel='Период (год)', xlabel="Время [Год]",
-                 title='Вейвлет-преобразование временного ряда\n(спектр мощности)')
-
-    plt.show()
-    r2 = r1 - h2
-
-    plt.subplot(2, 2, 1)
-    h3 = getModa(r2, time)
-    plt.plot(x, st, label="Исходный сигнал", color='black',alpha = 0.5)
-    plt.plot(x, h3, label="Мода 3", color='red')
-    plt.xlabel("Время(с)")
-    plt.ylabel("Амплитуда (МкВ)")
-    plt.legend()
-    plt.grid()
-    plt.subplot(2, 2, 2)
-    spect = SpectrFurie(h3)
-    plt.plot(spect[0], spect[1], color='black')
-    plt.title("Cпектр 3 моды")
-    plt.grid()
-    plt.xlabel("Частота (Гц)")
-    plt.ylabel("Амплитуда (МкВ)")
-
-    ax = scg.cws(x, h3, scales=range(1, int(len(x) / 2)), wavelet=wavelet, yaxis='frequency',
-                 figsize=(14, 3), cmap="jet", ylabel='Период (год)', xlabel="Время [Год]",
-                 title='Вейвлет-преобразование временного ряда\n(спектр мощности)')
-
-    plt.show()
-    r3 = r2 - h3
-
-    plt.subplot(2, 2, 1)
-    h4 = getModa(r3, time)
-    plt.plot(x, st, label="Исходный сигнал", color='black',alpha = 0.5)
-    plt.plot(x, h4, label="Мода 4", color='red')
-    plt.xlabel("Время(с)")
-    plt.ylabel("Амплитуда (МкВ)")
-    plt.legend()
-    plt.grid()
-
-    plt.subplot(2, 2, 2)
-    spect = SpectrFurie(h4)
-    plt.plot(spect[0], spect[1], color='black')
-    plt.title("Спектр 4 моды")
-    plt.grid()
-    plt.xlabel("Частота (Гц)")
-    plt.ylabel("Амплитуда (МкВ)")
-
-    ax = scg.cws(x, h4, scales=range(1, int(len(x) / 2)), wavelet=wavelet, yaxis='frequency',
-                 figsize=(14, 3), cmap="jet", ylabel='Период (год)', xlabel="Время [Год]",
-                 title='Вейвлет-преобразование временного ряда\n(спектр мощности)')
-
-    plt.show()
-    r4 = r3 - h4
-
-    plt.subplot(2, 2, 1)
-    h5 = getModa(r4, time)
-    #plt.plot(x, st, label="Исходный сигнал", color='black',alpha = 0.5)
-    plt.plot(x, h5, label="Мода 5 ", color='red')
-    plt.xlabel("Время(с)")
-    plt.ylabel("Амплитуда (МкВ)")
-    plt.legend()
-    plt.grid()
-    plt.subplot(2, 2, 2)
-    spect = SpectrFurie(h5)
-    plt.plot(spect[0], spect[1], color='black')
-    plt.title("Cпектр 5 моды")
-    plt.grid()
-    plt.xlabel("Частота (Гц)")
-    plt.ylabel("Амплитуда (МкВ)")
-
-    ax = scg.cws(x, h5, scales=range(1,int(len(x)/2)), wavelet=wavelet,yaxis='frequency',
-                 figsize=(14, 3), cmap="jet",  ylabel='Период (год)', xlabel="Время [Год]",
-                 title='Вейвлет-преобразование временного ряда\n(спектр мощности)')
-
-    plt.show()
-
-    plt.subplot(3, 1, 1)
-    plt.plot(x, st, label="Сигнал с наложением артефакта", alpha=0.5, color='black')
-    plt.subplot(3, 1, 2)
-    plt.plot(x, (h1 +h2+ h3),  label="Отфильрованный сигнал", color = 'red')
-    plt.xlabel("Время(с)")
-    plt.axvline(x=6, ymin=0, ymax=400, linewidth=1, linestyle='dashed', color='green')
-    plt.axvline(x=7.5, ymin=0, ymax=400, linewidth=1, linestyle='dashed', color='green')
-    plt.ylabel("Амплитуда (МкВ)")
-    path = "EEG_Data\\MAN\\20-33\\" + str("1") + ".txt"
-    DATA_TIME = 40
-    FD = 200
-    N = DATA_TIME / (1 / FD)
-    data = np.array(pd.read_csv(path, sep=" ", header=None, skiprows=2))
-    maxel = max(data[:, 3])
-    data[:, 3] = data[:, 3] / maxel
-    plt.subplot(3, 1, 3)
-    plt.plot(x, data[800:1600, 3], label="Сигнал без наложения артефакта" ,color = 'blue')
-    plt.subplot(3, 1, 1)
-    plt.plot(x, st, label="Сигнал с наложением артефакта", alpha=0.5, color='black')
-    plt.plot(x, data[800:1600, 3], label="Сигнал без наложения артефакта" ,color = 'blue')
-
-    #
-    # minY = np.percentile(st, q=[10, 80])[0]
-    # maxY = np.percentile(st, q=[10, 80])[1]
-    #
-    # for i in range(len(st)):
-    #     if st[i] >= maxY:
-    #         st[i] = maxY
-    #     if st[i] <= minY:
-    #         st[i] = minY
-    #     continue
-    # plt.plot(x, st, color='blue', label="Отфильрованный сигнал c помощью робастого преобразовния")
-    plt.legend()
+    # fig, (ax1, ax2, ax3) = plt.subplots(3, 1, figsize=(14, 6))
+    # h1 = getModa(s, time)
     # plt.grid()
-    plt.show()
+    # ax1.plot(x, st, label="Исходный сигнал", color='black', alpha=0.5)
+    # ax1.plot(x, h1, label="Мода 1", color='red')
+    # plt.xlabel("Время(с)")
+    # plt.ylabel("Амплитуда (МкВ)")
+    # plt.legend()
+    #
+    #
+    #
+    # wavelet = 'morl'
+    # ax2 = scg.cws(x, h1, scales=range(1, int(len(x) / 2)),
+    #               wavelet=wavelet,
+    #               yaxis='frequency',
+    #               ax=ax2,
+    #               figsize=(14, 3),
+    #               cmap="jet",
+    #               ylabel='Частота(Гц)',
+    #               xlabel="Время(с)",
+    #               cbar=None,
+    #               title='Вейвлет-спектр')
+    # ax2.set_yticks([0.5, 1, 2, 5, 10, 25, 50, 100])
+    # ax2.set_yticklabels([0.5, 1, 2, 5, 10, 25, 50, 100])
+    #
+    # spect = SpectrFurie(h1)
+    # ax3.plot(spect[0], spect[1], color='black')
+    # plt.title("Cпектр 1 моды")
+    # plt.grid()
+    # plt.xlabel("Частота (Гц)")
+    # plt.ylabel("Амплитуда (МкВ)")
+    #
+    # plt.show()
+    # r1 = s - h1
+    #
+    # plt.subplot(2, 2, 1)
+    # h2 = getModa(r1, time)
+    # plt.plot(x, st, label="Исходный сигнал", color='black', alpha=0.5)
+    # plt.plot(x, h2, label="Мода 2", color='red')
+    # plt.xlabel("Время(с)")
+    # plt.ylabel("Амплитуда (МкВ)")
+    # plt.legend()
+    # plt.grid()
+    #
+    # plt.subplot(2, 2, 2)
+    # spect = SpectrFurie(h2)
+    # plt.plot(spect[0], spect[1], color='black')
+    # plt.title("Спектр 2 моды")
+    # plt.grid()
+    # plt.xlabel("Частота (Гц)")
+    # plt.ylabel("Амплитуда (МкВ)")
+    #
+    # ax = scg.cws(x, h2, scales=range(1, int(len(x) / 2)), wavelet=wavelet, yaxis='frequency',
+    #              figsize=(14, 3), cmap="jet", ylabel='Период (год)', xlabel="Время [Год]",
+    #              title='Вейвлет-преобразование временного ряда\n(спектр мощности)')
+    #
+    # plt.show()
+    # r2 = r1 - h2
+    #
+    # plt.subplot(2, 2, 1)
+    # h3 = getModa(r2, time)
+    # plt.plot(x, st, label="Исходный сигнал", color='black', alpha=0.5)
+    # plt.plot(x, h3, label="Мода 3", color='red')
+    # plt.xlabel("Время(с)")
+    # plt.ylabel("Амплитуда (МкВ)")
+    # plt.legend()
+    # plt.grid()
+    # plt.subplot(2, 2, 2)
+    # spect = SpectrFurie(h3)
+    # plt.plot(spect[0], spect[1], color='black')
+    # plt.title("Cпектр 3 моды")
+    # plt.grid()
+    # plt.xlabel("Частота (Гц)")
+    # plt.ylabel("Амплитуда (МкВ)")
+    #
+    # ax = scg.cws(x, h3, scales=range(1, int(len(x) / 2)), wavelet=wavelet, yaxis='frequency',
+    #              figsize=(14, 3), cmap="jet", ylabel='Период (год)', xlabel="Время [Год]",
+    #              title='Вейвлет-преобразование временного ряда\n(спектр мощности)')
+    #
+    # plt.show()
+    # r3 = r2 - h3
+    #
+    # plt.subplot(2, 2, 1)
+    # h4 = getModa(r3, time)
+    # plt.plot(x, st, label="Исходный сигнал", color='black', alpha=0.5)
+    # plt.plot(x, h4, label="Мода 4", color='red')
+    # plt.xlabel("Время(с)")
+    # plt.ylabel("Амплитуда (МкВ)")
+    # plt.legend()
+    # plt.grid()
+    #
+    # plt.subplot(2, 2, 2)
+    # spect = SpectrFurie(h4)
+    # plt.plot(spect[0], spect[1], color='black')
+    # plt.title("Спектр 4 моды")
+    # plt.grid()
+    # plt.xlabel("Частота (Гц)")
+    # plt.ylabel("Амплитуда (МкВ)")
+    #
+    # ax = scg.cws(x, h4, scales=range(1, int(len(x) / 2)), wavelet=wavelet, yaxis='frequency',
+    #              figsize=(14, 3), cmap="jet", ylabel='Период (год)', xlabel="Время [Год]",
+    #              title='Вейвлет-преобразование временного ряда\n(спектр мощности)')
+    #
+    # plt.show()
+    # r4 = r3 - h4
+    #
+    # plt.subplot(2, 2, 1)
+    # h5 = getModa(r4, time)
+    # # plt.plot(x, st, label="Исходный сигнал", color='black',alpha = 0.5)
+    # plt.plot(x, h5, label="Мода 5 ", color='red')
+    # plt.xlabel("Время(с)")
+    # plt.ylabel("Амплитуда (МкВ)")
+    # plt.legend()
+    # plt.grid()
+    # plt.subplot(2, 2, 2)
+    # spect = SpectrFurie(h5)
+    # plt.plot(spect[0], spect[1], color='black')
+    # plt.title("Cпектр 5 моды")
+    # plt.grid()
+    # plt.xlabel("Частота (Гц)")
+    # plt.ylabel("Амплитуда (МкВ)")
+    #
+    # ax = scg.cws(x, h5, scales=range(1, int(len(x) / 2)), wavelet=wavelet, yaxis='frequency',
+    #              figsize=(14, 3), cmap="jet", ylabel='Период (год)', xlabel="Время [Год]",
+    #              title='Вейвлет-преобразование временного ряда\n(спектр мощности)')
+    #
+    # plt.show()
+    #
+    # plt.subplot(3, 1, 1)
+    # plt.plot(x, st, label="Сигнал с наложением артефакта", alpha=0.5, color='black')
+    # plt.subplot(3, 1, 2)
+    # plt.plot(x, (h1 + h2 + h3), label="Отфильрованный сигнал", color='red')
+    # plt.xlabel("Время(с)")
+    # plt.axvline(x=6, ymin=0, ymax=400, linewidth=1, linestyle='dashed', color='green')
+    # plt.axvline(x=7.5, ymin=0, ymax=400, linewidth=1, linestyle='dashed', color='green')
+    # plt.ylabel("Амплитуда (МкВ)")
+    # path = "EEG_Data\\MAN\\20-33\\" + str("1") + ".txt"
+    # DATA_TIME = 40
+    # FD = 200
+    # N = DATA_TIME / (1 / FD)
+    # data = np.array(pd.read_csv(path, sep=" ", header=None, skiprows=2))
+    # maxel = max(data[:, 3])
+    # data[:, 3] = data[:, 3] / maxel
+    # plt.subplot(3, 1, 3)
+    # plt.plot(x, data[800:1600, 3], label="Сигнал без наложения артефакта", color='blue')
+    # plt.subplot(3, 1, 1)
+    # plt.plot(x, st, label="Сигнал с наложением артефакта", alpha=0.5, color='black')
+    # plt.plot(x, data[800:1600, 3], label="Сигнал без наложения артефакта", color='blue')
+    #
+    # #
+    # # minY = np.percentile(st, q=[10, 80])[0]
+    # # maxY = np.percentile(st, q=[10, 80])[1]
+    # #
+    # # for i in range(len(st)):
+    # #     if st[i] >= maxY:
+    # #         st[i] = maxY
+    # #     if st[i] <= minY:
+    # #         st[i] = minY
+    # #     continue
+    # # plt.plot(x, st, color='blue', label="Отфильрованный сигнал c помощью робастого преобразовния")
+    # plt.legend()
+    # # plt.grid()
+    # plt.show()
 
 
 # ------- робастое преобразование------------
@@ -680,9 +698,10 @@ if __name__ == "__main__":
     # plt.show()
     # plotSingleCanal(data, 3, [4,8])
 
-    #approximation(data,3, [4,8])
+    # approximation(data,3, [4,8])
 
     from random import gauss
+
     # from random import seed
     #
     #
@@ -703,4 +722,3 @@ if __name__ == "__main__":
     # data[:, 3] = data[:, 3] / maxel + y
 
     getEmpiricalFashion(data, 3, [4, 8])
-
