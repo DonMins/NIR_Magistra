@@ -9,8 +9,11 @@ import matplotlib.pyplot as plt
 from matplotlib.collections import LineCollection
 from scipy.interpolate import CubicSpline
 # import mne
+from pylab import *
+import pywt
 from scipy.signal import hilbert, chirp
 from scipy.interpolate import interp1d
+import scaleogram as scg
 
 
 def info(DATA_TIME, FD, N, NUMBER_CHANNELS, path):
@@ -293,6 +296,8 @@ def SpectrFurie(data):
     return newX, newY
 
 
+
+
 def getEmpiricalFashion(data, canal, time):
     start = time[0] * sittings.FD
     end = time[1] * sittings.FD
@@ -325,6 +330,12 @@ def getEmpiricalFashion(data, canal, time):
     plt.grid()
     plt.xlabel("Частота (Гц)")
     plt.ylabel("Амплитуда (МкВ)")
+    wavelet = 'morl'
+
+    ax = scg.cws(x, st, scales=range(1,2*len(x)), wavelet=wavelet,yaxis='frequency',cscale = 'linear',
+                 figsize=(14, 3), cmap="jet",  ylabel='Период (год)', xlabel="Время [Год]",
+                 title='Вейвлет-преобразование временного ряда\n(спектр мощности)')
+
     plt.show()
 
     plt.subplot(2, 2, 1)
@@ -343,6 +354,13 @@ def getEmpiricalFashion(data, canal, time):
     plt.grid()
     plt.xlabel("Частота (Гц)")
     plt.ylabel("Амплитуда (МкВ)")
+
+    ax = scg.cws(x, h1, scales=pywt.scale2frequency(wavelet, x)/0.02, wavelet=wavelet, yaxis='frequency', cscale='linear',
+                 figsize=(14, 3), cmap="jet", ylabel='Период (год)', xlabel="Время [Год]",
+                 title='Вейвлет-преобразование временного ряда\n(спектр мощности)')
+    ticks = ax.set_yticks([2, 4, 8, 16, 32])
+    ticks = ax.set_yticklabels([2, 4, 8, 16, 32])
+
     plt.show()
     r1 = s - h1
 
@@ -362,6 +380,13 @@ def getEmpiricalFashion(data, canal, time):
     plt.grid()
     plt.xlabel("Частота (Гц)")
     plt.ylabel("Амплитуда (МкВ)")
+
+    ax = scg.cws(x, h2,scales=pywt.scale2frequency(wavelet, x)/0.02, wavelet=wavelet, yaxis='frequency', cscale='linear',
+                 figsize=(14, 3), cmap="jet", ylabel='Период (год)', xlabel="Время [Год]",
+                 title='Вейвлет-преобразование временного ряда\n(спектр мощности)')
+    ticks = ax.set_yticks([2, 4, 8, 16, 32])
+    ticks = ax.set_yticklabels([2, 4, 8, 16, 32])
+
     plt.show()
     r2 = r1 - h2
 
@@ -380,6 +405,13 @@ def getEmpiricalFashion(data, canal, time):
     plt.grid()
     plt.xlabel("Частота (Гц)")
     plt.ylabel("Амплитуда (МкВ)")
+
+    ax = scg.cws(x, h3, scales=arange(1, len(h3)), wavelet=wavelet, yaxis='frequency', cscale='linear',
+                 figsize=(14, 3), cmap="jet", ylabel='Период (год)', xlabel="Время [Год]",
+                 title='Вейвлет-преобразование временного ряда\n(спектр мощности)')
+    ticks = ax.set_yticks([2, 4, 8, 16, 32])
+    ticks = ax.set_yticklabels([2, 4, 8, 16, 32])
+
     plt.show()
     r3 = r2 - h3
 
@@ -399,6 +431,13 @@ def getEmpiricalFashion(data, canal, time):
     plt.grid()
     plt.xlabel("Частота (Гц)")
     plt.ylabel("Амплитуда (МкВ)")
+
+    ax = scg.cws(x, h4, scales=arange(1, len(h4)), wavelet=wavelet, yaxis='frequency', cscale='linear',
+                 figsize=(14, 3), cmap="jet", ylabel='Период (год)', xlabel="Время [Год]",
+                 title='Вейвлет-преобразование временного ряда\n(спектр мощности)')
+    ticks = ax.set_yticks([2, 4, 8, 16, 32])
+    ticks = ax.set_yticklabels([2, 4, 8, 16, 32])
+
     plt.show()
     r4 = r3 - h4
 
@@ -417,6 +456,13 @@ def getEmpiricalFashion(data, canal, time):
     plt.grid()
     plt.xlabel("Частота (Гц)")
     plt.ylabel("Амплитуда (МкВ)")
+
+    ax = scg.cws(x, h5, scales=arange(1, len(h5)), wavelet=wavelet, yaxis='frequency', cscale='linear',
+                 figsize=(14, 3), cmap="jet", ylabel='Период (год)', xlabel="Время [Год]",
+                 title='Вейвлет-преобразование временного ряда\n(спектр мощности)')
+    ticks = ax.set_yticks([2, 4, 8, 16, 32])
+    ticks = ax.set_yticklabels([2, 4, 8, 16, 32])
+
     plt.show()
 
     plt.subplot(3, 1, 1)
@@ -611,14 +657,14 @@ if __name__ == "__main__":
     # ------------------------------------------------------------------------
 
     # -------------------Фильтрация-------------------------------------------
-    # data[1200:1250, :] = data[1200:1250, :] + 100
-    # data[1250:1300, :] = data[1250:1300, :] + 200
-    # data[1300:1350, :] = data[1300:1350, :] + 280
-    # data[1350:1400, :] = data[1350:1400, :] + 320
-    #
-    # data[1400:1450, :] = data[1400:1450, :] + 300
-    # data[1450:1500, :] = data[1450:1500, :] + 130
-    # data[1550:1600, :] = data[1550:1600, :] + 50
+    data[1200:1250, :] = data[1200:1250, :] + 100
+    data[1250:1300, :] = data[1250:1300, :] + 200
+    data[1300:1350, :] = data[1300:1350, :] + 280
+    data[1350:1400, :] = data[1350:1400, :] + 320
+
+    data[1400:1450, :] = data[1400:1450, :] + 300
+    data[1450:1500, :] = data[1450:1500, :] + 130
+    data[1550:1600, :] = data[1550:1600, :] + 50
 
     # plotEEG(data,"ЭЭГ сигнал с артефактом (движение глаз)",10)
     # for i in range(1,17):
@@ -647,23 +693,24 @@ if __name__ == "__main__":
     #approximation(data,3, [4,8])
 
     from random import gauss
-    from random import seed
-
-
-    # seed random number generator
-    seed(1)
-    # create white noise series
-    # series = [gauss(0.0, 1000.0) for i in range(len(data[:,3] ))]
-    # data[:,3] =   data[:,3] + series
-
-    Fs = len(data[:, 3])  # sampling rate
-    Ts = 1.0 / Fs  # sampling interval
-    t = np.arange(0, 1, Ts)  # time vector
-
-    ff = 20  # frequency of the signal
-    y = np.sin(2 * np.pi * ff * t)
-
-    maxel = max(data[:, 3])
-    data[:, 3] = data[:, 3] / maxel + y
+    # from random import seed
+    #
+    #
+    # # seed random number generator
+    # seed(1)
+    # # create white noise series
+    # # series = [gauss(0.0, 1000.0) for i in range(len(data[:,3] ))]
+    # # data[:,3] =   data[:,3] + series
+    #
+    # Fs = len(data[:, 3])  # sampling rate
+    # Ts = 1.0 / Fs  # sampling interval
+    # t = np.arange(0, 1, Ts)  # time vector
+    #
+    # ff = 20  # frequency of the signal
+    # y = np.sin(2 * np.pi * ff * t)
+    #
+    # maxel = max(data[:, 3])
+    # data[:, 3] = data[:, 3] / maxel + y
 
     getEmpiricalFashion(data, 3, [4, 8])
+
