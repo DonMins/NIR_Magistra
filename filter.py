@@ -8,13 +8,17 @@ class Filter:
         pass
 
     def Fourier_filter(self,data,ranges,FD=None):
+        """ Фильтр Фурье
+        на вход принимает матрицу данных и диапазон для фильтрации
+
+        """
         if FD==None: FD = sittings.FD
         ranges = sittings.Frequency_Ranges[ranges]
         lower_freq = ranges[0]
         high_freq = ranges[1]
-        N = int(sittings.N)
+        N = len(data[:,0])
         number_channels = len(data[0][0:])-1
-        print(number_channels)
+
         answer = np.array(np.zeros((N,number_channels+1)))
         answer[0:N,0] = data[0:N,0]
 
