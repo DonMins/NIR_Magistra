@@ -63,6 +63,7 @@ def plotEEG(data, name, time, color='black'):
     plt.tight_layout()
 
 
+
 def EegChart(data, NUMBER_CHANNELS, N_DATA, FREQUENCY):
     mas = np.zeros((NUMBER_CHANNELS, N_DATA))
     for i in range(1, NUMBER_CHANNELS + 1):
@@ -340,6 +341,7 @@ def getEmpiricalFashion(data, canal, time):
     plt.grid()
     plt.xlabel("Частота (Гц)")
     plt.ylabel("Амплитуда (МкВ)")
+    plt.subplots_adjust(wspace=0.5, hspace=0.5)
 
 
 

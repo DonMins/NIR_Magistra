@@ -48,51 +48,113 @@ def calculateCorrelation(data):
     return featureString
 
 
+def getFeatures(data, featureStringAll,i,className = None):
+    featureString = featureStringAll
+    # -----------Получили признаки из альфа диапазона---------------#
+    alphaData = Filter().Fourier_filter(data=np.array(data), ranges='alpha',className =className)
+    alphaData = pd.DataFrame(data=alphaData[:, :], columns=names)
+    featureStringAlpha = calculateCorrelation(alphaData)
+
+    # -----------Получили признаки из дельта диапазона---------------#
+    deltaData = Filter().Fourier_filter(data=np.array(data), ranges='delta',className =className)
+    deltaData = pd.DataFrame(data=deltaData[:, :], columns=names)
+    featureStringDelta = calculateCorrelation(deltaData)
+
+    # -----------Получили признаки из тета диапазона---------------#
+    thetaData = Filter().Fourier_filter(data=np.array(data), ranges='theta',className =className)
+    thetaData = pd.DataFrame(data=thetaData[:, :], columns=names)
+    featureStringTheta = calculateCorrelation(thetaData)
+
+    # -----------Получили признаки из бета1 диапазона---------------#
+    beta1Data = Filter().Fourier_filter(data=np.array(data), ranges='beta1',className =className)
+    beta1Data = pd.DataFrame(data=beta1Data[:, :], columns=names)
+    featureStringBeta1 = calculateCorrelation(beta1Data)
+
+    # -----------Получили признаки из бета2 диапазона---------------#
+    beta2Data = Filter().Fourier_filter(data=np.array(data), ranges='beta2',className =className)
+    beta2Data = pd.DataFrame(data=beta2Data[:, :], columns=names)
+    featureStringBeta2 = calculateCorrelation(beta2Data)
+    if className!=None:
+        featureString[i - 1,:] = featureStringAlpha + featureStringBeta1 + featureStringBeta2 + featureStringDelta + featureStringTheta + className
+    else:
+        featureString[i - 1,:] = featureStringAlpha + featureStringBeta1 + featureStringBeta2 + featureStringDelta + featureStringTheta
+
+    return featureString
+
 if __name__ == "__main__":
-    featureStringAll = np.zeros((30, 40)) # агрессивные
+    #featureStringAll = np.zeros((30, 40)) # агрессивные
     #featureStringAll = np.zeros((103, 40)) # женщины
-    #featureStringAll = np.zeros((76, 40))  # мужчины
-    featureStringAll = np.zeros((12, 40))  # тест
+
     names = ['T[sec]', 'Fp1', 'Fp2', 'F7', 'F3', 'F4',
              'F8', 'T3', 'C3', 'C4', 'T4',
              'T5', 'P3', 'P4', 'T6', 'O1', 'O2']
+    pathSave = "EEG_Features\\" + str(1) + ".txt"
 
-    for i in range(1,13):
-        path = "EEG_Data\\norm\\" + str(i) + ".txt"
+    # featureStringAll = np.zeros((76, 41))  # мужчины
+    # for i in range(1,77):
+    #     path = "EEG_Data\\MAN\\" + str(i) + ".txt"
+    #     data = pd.read_csv(path, sep=" ", header=None, skiprows=2,names = names )
+    #
+    #     data['className'] = [0 for i in range(len(data['T[sec]']))]
+    #     clas = [0]
+    #     featureStringAll = getFeatures(data, featureStringAll,i , clas)
+    #
+    # fileName = open(pathSave, 'w')
+    # np.savetxt(fileName, featureStringAll, fmt="%f")
+    #
+    # featureStringAll = np.zeros((103, 41)) # женщины
+    # for i in range(1, 104):
+    #     path = "EEG_Data\\FEMALE\\" + str(i) + ".txt"
+    #     data = pd.read_csv(path, sep=" ", header=None, skiprows=2, names=names)
+    #
+    #     data['className'] = [0 for i in range(len(data['T[sec]']))]
+    #     clas = [0]
+    #     featureStringAll = getFeatures(data, featureStringAll,i ,clas)
+    #
+    # fileName = open(pathSave, 'a')
+    # np.savetxt(fileName, featureStringAll, fmt="%f")
+    #
+    # featureStringAll = np.zeros((60, 41)) # NORM
+    # names2 = ['T[sec]',  'F7',  'F3',  'F4',  'F8',  'T3',  'C3',  'Cz',  'C4',  'T4',  'T5',  'P3',  'Pz',  'P4',  'T6',  'O1',  'O2']
+    # for i in range(1, 61):
+    #     path = "EEG_Data\\Norm\\" + str(i) + ".txt"
+    #     data = pd.read_csv(path, sep=" ", header=None, skiprows=2, names=names2)
+    #
+    #     data['className'] = [0 for i in range(len(data['T[sec]']))]
+    #     clas = [0]
+    #     featureStringAll = getFeatures(data, featureStringAll,i,clas)
+    #
+    # fileName = open(pathSave, 'a')
+    # np.savetxt(fileName, featureStringAll, fmt="%f")
+    #
+    # featureStringAll = np.zeros((50, 41)) # depress
+    # names2 = ['T[sec]',  'F7',  'F3',  'F4',  'F8',  'T3',  'C3',  'Cz',  'C4',  'T4',  'T5',  'P3',  'Pz',  'P4',  'T6',  'O1',  'O2']
+    # for i in range(1, 51):
+    #     path = "EEG_Data\\depress\\" + str(i) + ".txt"
+    #     data = pd.read_csv(path, sep=" ", header=None, skiprows=2, names=names2)
+    #
+    #     data['className'] = [0 for i in range(len(data['T[sec]']))]
+    #     clas = [1]
+    #     featureStringAll = getFeatures(data, featureStringAll,i,clas)
+    #
+    # fileName = open(pathSave, 'a')
+    # np.savetxt(fileName, featureStringAll, fmt="%f")
 
-        data = pd.read_csv(path, sep=" ", header=None, skiprows=2,names = names )
 
-        #-----------Получили признаки из альфа диапазона---------------#
-        alphaData = Filter().Fourier_filter(data = np.array(data), ranges='alpha')
-        alphaData = pd.DataFrame(data = alphaData[:, :], columns = names )
-        featureStringAlpha = calculateCorrelation(alphaData)
+    featureStringAll = np.zeros((11, 40))  # Test
+    names2 = ['T[sec]', 'F7', 'F3', 'F4', 'F8', 'T3', 'C3', 'Cz', 'C4', 'T4', 'T5', 'P3', 'Pz', 'P4', 'T6', 'O1', 'O2']
+    for i in range(51, 62):
+        path = "EEG_Data\\depress\\" + str(i) + ".txt"
+        data = pd.read_csv(path, sep=" ", header=None, skiprows=2, names=names2)
 
-        # -----------Получили признаки из дельта диапазона---------------#
-        deltaData = Filter().Fourier_filter(data=np.array(data), ranges='delta')
-        deltaData = pd.DataFrame(data = deltaData[:, :], columns = names)
-        featureStringDelta = calculateCorrelation(deltaData)
+        featureStringAll = getFeatures(data, featureStringAll,i - 51)
 
-        # -----------Получили признаки из тета диапазона---------------#
-        thetaData = Filter().Fourier_filter(data=np.array(data), ranges='theta')
-        thetaData = pd.DataFrame(data=thetaData[:, :], columns=names)
-        featureStringTheta = calculateCorrelation(thetaData)
-
-        # -----------Получили признаки из бета1 диапазона---------------#
-        beta1Data = Filter().Fourier_filter(data=np.array(data), ranges='beta1')
-        beta1Data = pd.DataFrame(data=beta1Data[:, :], columns=names)
-        featureStringBeta1 = calculateCorrelation(beta1Data)
-
-        # -----------Получили признаки из бета2 диапазона---------------#
-        beta2Data = Filter().Fourier_filter(data=np.array(data), ranges='beta2')
-        beta2Data = pd.DataFrame(data=beta2Data[:, :], columns=names)
-        featureStringBeta2 = calculateCorrelation(beta2Data)
-
-        featureStringAll[i-1,:] = featureStringAlpha + featureStringBeta1 + featureStringBeta2 + featureStringDelta + featureStringTheta
-
-   # path1 = "EEG_Features\\" + str(1) + ".txt"
-    path1 = "EEG_Features\\test.txt"
-    fileName = open(path1, 'w')
+    fileName = open("EEG_Features\\test.txt", 'w')
     np.savetxt(fileName, featureStringAll, fmt="%f")
+
+
+
+
 
 
 
