@@ -1,3 +1,5 @@
+from numpy.core._multiarray_umath import ndarray
+
 from filter import Filter
 import pandas as pd
 import numpy as np
@@ -12,10 +14,11 @@ from scipy.signal import hilbert, chirp
 from scipy.interpolate import interp1d
 import scaleogram as scg
 
-for i in range(6,111):
-    path = "EEG_Data\\tmp\\" + str(i+1) + ".txt"
-    pathSave = "EEG_Data\\NormForAlcohol\\" + str(i+1) + ".txt"
-    featureStringAll = np.zeros((256, 15))
+for i in range(6000,7033):
+    print(i)
+    path = "EEG_Data\\Алко\\" + str(i+1) + ".txt"
+    pathSave = "EEG_Features\\Алко\\" + str(i+1) + ".txt"
+    featureStringAll = np.zeros((256, 17), dtype=float)
 
     names = ['FP1', 'FP2', 'F7', 'F3', 'F4',
                  'F8', 'T3', 'C3', 'C4', 'T4',
@@ -29,6 +32,7 @@ for i in range(6,111):
     FP2 = []
     F7 = []
     F3 = []
+    F8 = []
     F4 = []
     T3 = []
     C3 = []
@@ -64,6 +68,13 @@ for i in range(6,111):
                 F7.append(data[3][i])
             except:
                 pass
+
+        elif (data[1][i] == 'F8' and data[0][i] != '#'):
+            try:
+                F8.append(data[3][i])
+            except:
+                pass
+
 
         elif (data[1][i] =='F3'and  data[0][i]!='#'):
             try:
@@ -142,17 +153,20 @@ for i in range(6,111):
     featureStringAll[:,2] = FP2
     featureStringAll[:,3] = F7
     featureStringAll[:,4] = F3
-    featureStringAll[:,5] = T3
-    featureStringAll[:,6] = C3
-    featureStringAll[:,7] = C4
-    featureStringAll[:,8] = T4
-    featureStringAll[:,9] = T5
-    featureStringAll[:,10] = P3
-    featureStringAll[:,11] = P4
-    featureStringAll[:,12] = T6
-    featureStringAll[:,13] = O1
-    featureStringAll[:,14] = O2
+    featureStringAll[:,5] = F4
+    featureStringAll[:,6] = F8
+    featureStringAll[:,7] = T3
+    featureStringAll[:,8] = C3
+    featureStringAll[:,9] = C4
+    featureStringAll[:,10] = T4
+    featureStringAll[:,11] = T5
+    featureStringAll[:,12] = P3
+    featureStringAll[:,13] = P4
+    featureStringAll[:,14] = T6
+    featureStringAll[:,15] = O1
+    featureStringAll[:,16] = O2
 
 
     fileName = open(pathSave, 'w')
-    np.savetxt(fileName, featureStringAll, fmt="%f")
+    np.savetxt(fileName, featureStringAll,fmt = '%.5f')
+    fileName.close()

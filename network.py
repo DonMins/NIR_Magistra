@@ -3,14 +3,6 @@ from keras.models import Sequential
 from keras.layers import Dense
 from sklearn.utils import shuffle
 
-def genY():
-    y = []
-    for i in range(239):
-        y.append(0)
-    for i in range(51):
-        y.append(1)
-    return y
-
 
 path1 = "EEG_Features\\" + str(1) + ".txt"
 path2 = "EEG_Features\\test.txt"
@@ -34,11 +26,22 @@ model.add(Dense(2000, activation='relu'))
 model.add(Dense(1, activation="sigmoid"))
 
 model.compile(loss="binary_crossentropy", optimizer="adam", metrics=['accuracy'])
-model.fit(X_train, Y_train, batch_size = 20, epochs = 10)
+model.fit(X_train, Y_train, batch_size = 200, epochs = 1)
 
 scores = model.evaluate(X_train, Y_train)
 print("\n%s: %.2f%%" % (model.metrics_names[1], scores[1]*100))
 
 pred = model.predict_classes(X_test)
-print(pred)
+
+ones = 0
+zeros =0
+for i in pred:
+    if (i == 1):
+        ones = ones + 1
+    elif i==0:
+         zeros = zeros + 1
+print("=====================")
+print("Здоровых = ", zeros)
+print("Больных = ", ones )
+# print(pred)
 

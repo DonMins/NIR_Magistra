@@ -1,5 +1,6 @@
 DATA_TIME = 40
-FD = 200
+# FD = 200
+FD = 256
 N = DATA_TIME / (1 / FD)
 Frequency_Ranges = {
     'delta':[0,4],
