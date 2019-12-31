@@ -140,55 +140,55 @@ if __name__ == "__main__":
     # fileName = open(pathSave, 'a')
     # np.savetxt(fileName, featureStringAll, fmt="%f")
 
-    # featureStringAll = np.zeros((3000, 41))  # Алкоголики
-    # for i in range(1,3001):
-    #     path = "EEG_Features\\Алко\\" + str(i) + ".txt"
-    #     data = pd.read_csv(path, sep=" ", header=None,names = names )
-    #
-    #     data['className'] = [0 for i in range(len(data['T[sec]']))]
-    #     clas = [1]
-    #     featureStringAll = getFeatures(data, featureStringAll,i , clas)
-    #
-    # fileName = open(pathSave, 'w')
-    # np.savetxt(fileName, featureStringAll, fmt = '%.5f')
-    # fileName.close()
-    #
-    # featureStringAll = np.zeros((3000, 41)) # Не алкоголики
-    # for i in range(1, 3001):
-    #     path = "EEG_Features\\Не алко\\" + str(i) + ".txt"
-    #     data = pd.read_csv(path, sep=" ", header=None,  names=names)
-    #
-    #     data['className'] = [0 for i in range(len(data['T[sec]']))]
-    #     clas = [0]
-    #     featureStringAll = getFeatures(data, featureStringAll,i ,clas)
-    #
-    # fileName = open(pathSave, 'a')
-    # np.savetxt(fileName, featureStringAll, fmt = '%.5f')
-    # fileName.close()
-
-    featureStringAll = np.zeros((6, 40))  # Test
-    names2 = ['T[sec]', 'F7', 'F3', 'F4', 'F8', 'T3', 'C3', 'Cz', 'C4', 'T4', 'T5', 'P3', 'Pz', 'P4', 'T6', 'O1', 'O2']
-    for i in range(7000, 7006):
+    featureStringAll = np.zeros((7033, 41))  # Алкоголики
+    for i in range(1,7034):
         path = "EEG_Features\\Алко\\" + str(i) + ".txt"
-        data = pd.read_csv(path, sep=" ", header=None,  names=names2)
+        data = pd.read_csv(path, sep=" ", header=None,names = names )
 
-        featureStringAll = getFeatures(data, featureStringAll,i - 7000)
+        data['className'] = [0 for i in range(len(data['T[sec]']))]
+        clas = [1]
+        featureStringAll = getFeatures(data, featureStringAll,i , clas)
 
-    fileName = open("EEG_Features\\test.txt", 'w')
+    fileName = open(pathSave, 'w')
     np.savetxt(fileName, featureStringAll, fmt = '%.5f')
     fileName.close()
 
-    featureStringAll = np.zeros((6, 40))  # Test
-    names2 = ['T[sec]', 'F7', 'F3', 'F4', 'F8', 'T3', 'C3', 'Cz', 'C4', 'T4', 'T5', 'P3', 'Pz', 'P4', 'T6', 'O1', 'O2']
-    for i in range(3001, 3007):
+    featureStringAll = np.zeros((3921, 41)) # Не алкоголики
+    for i in range(1, 3922):
         path = "EEG_Features\\Не алко\\" + str(i) + ".txt"
-        data = pd.read_csv(path, sep=" ", header=None, names=names2)
+        data = pd.read_csv(path, sep=" ", header=None,  names=names)
 
-        featureStringAll = getFeatures(data, featureStringAll, i - 3001)
+        data['className'] = [0 for i in range(len(data['T[sec]']))]
+        clas = [0]
+        featureStringAll = getFeatures(data, featureStringAll,i ,clas)
 
-    fileName = open("EEG_Features\\test.txt", 'a')
-    np.savetxt(fileName, featureStringAll, fmt='%.5f')
+    fileName = open(pathSave, 'a')
+    np.savetxt(fileName, featureStringAll, fmt = '%.5f')
     fileName.close()
+
+    # featureStringAll = np.zeros((6, 40))  # Test
+    # names2 = ['T[sec]', 'F7', 'F3', 'F4', 'F8', 'T3', 'C3', 'Cz', 'C4', 'T4', 'T5', 'P3', 'Pz', 'P4', 'T6', 'O1', 'O2']
+    # for i in range(7000, 7006):
+    #     path = "EEG_Features\\Алко\\" + str(i) + ".txt"
+    #     data = pd.read_csv(path, sep=" ", header=None,  names=names2)
+    #
+    #     featureStringAll = getFeatures(data, featureStringAll,i - 7000)
+    #
+    # fileName = open("EEG_Features\\test.txt", 'w')
+    # np.savetxt(fileName, featureStringAll, fmt = '%.5f')
+    # fileName.close()
+    #
+    # featureStringAll = np.zeros((6, 40))  # Test
+    # names2 = ['T[sec]', 'F7', 'F3', 'F4', 'F8', 'T3', 'C3', 'Cz', 'C4', 'T4', 'T5', 'P3', 'Pz', 'P4', 'T6', 'O1', 'O2']
+    # for i in range(3001, 3007):
+    #     path = "EEG_Features\\Не алко\\" + str(i) + ".txt"
+    #     data = pd.read_csv(path, sep=" ", header=None, names=names2)
+    #
+    #     featureStringAll = getFeatures(data, featureStringAll, i - 3001)
+    #
+    # fileName = open("EEG_Features\\test.txt", 'a')
+    # np.savetxt(fileName, featureStringAll, fmt='%.5f')
+    # fileName.close()
 
 
 
