@@ -1,3 +1,7 @@
+
+
+# Здесь создается матрица признаков на основе корреляционной синхронности
+
 import matplotlib.pyplot as plt
 import pandas as pd
 import os
@@ -37,10 +41,10 @@ def corrEnvelope(x, y):
 def calculateCorrelation(data):
     """Метод считает межполушарную синхронность"""
     featureString = []
-    featureString.append(corrEnvelope(data['Fp1'], data['Fp2']))
+    # featureString.append(corrEnvelope(data['Fp1'], data['Fp2']))
     featureString.append(corrEnvelope(data['F7'], data['F8']))
     featureString.append(corrEnvelope(data['F3'], data['F4']))
-    featureString.append(corrEnvelope(data['T3'], data['T4']))
+    # featureString.append(corrEnvelope(data['T3'], data['T4']))
     featureString.append (corrEnvelope(data['C3'], data['C4']))
     featureString.append(corrEnvelope(data['T5'], data['T6']))
     featureString.append(corrEnvelope(data['P3'], data['P4']))
@@ -85,115 +89,117 @@ if __name__ == "__main__":
     #featureStringAll = np.zeros((30, 40)) # агрессивные
     #featureStringAll = np.zeros((103, 40)) # женщины
 
-    names = ['T[sec]', 'Fp1', 'Fp2', 'F7', 'F3', 'F4',
-             'F8', 'T3', 'C3', 'C4', 'T4',
-             'T5', 'P3', 'P4', 'T6', 'O1', 'O2']
-    pathSave = "EEG_Features\\" + str(1) + ".txt"
+    # names = ['T[sec]', 'Fp1', 'Fp2', 'F7', 'F3', 'F4',
+    #          'F8', 'T3', 'C3', 'C4', 'T4',
+    #          'T5', 'P3', 'P4', 'T6', 'O1', 'O2']
 
-    # featureStringAll = np.zeros((76, 41))  # мужчины
-    # for i in range(1,77):
-    #     path = "EEG_Data\\MAN\\" + str(i) + ".txt"
+    names = ['T[sec]','F7', 'F3', 'F4','F8', 'T3', 'C3', 'Cz', 'C4','T5', 'P3', 'Pz','P4', 'T6', 'O1', 'O2']
+
+    pathSave = "Признаки\\2\\" + str("allVall") + ".txt"
+
+
+    # featureStringAll = np.zeros((61, 31))
+    # for i in range(1,62):
+    #     path = "EEG_Data\\Депрессия\\depress\\" + str(i) + ".txt"
     #     data = pd.read_csv(path, sep=" ", header=None, skiprows=2,names = names )
-    #
-    #     data['className'] = [0 for i in range(len(data['T[sec]']))]
-    #     clas = [0]
-    #     featureStringAll = getFeatures(data, featureStringAll,i , clas)
+    #     data['className'] = [3 for i in range(len(data['T[sec]']))]  # 1 - больной , 0 - здоровый
+    #     clas = [3]
+    #     featureStringAll = getFeatures(data, featureStringAll,i, clas)
     #
     # fileName = open(pathSave, 'w')
     # np.savetxt(fileName, featureStringAll, fmt="%f")
+    # fileName.close()
     #
-    # featureStringAll = np.zeros((103, 41)) # женщины
-    # for i in range(1, 104):
-    #     path = "EEG_Data\\FEMALE\\" + str(i) + ".txt"
-    #     data = pd.read_csv(path, sep=" ", header=None, skiprows=2, names=names)
-    #
-    #     data['className'] = [0 for i in range(len(data['T[sec]']))]
-    #     clas = [0]
-    #     featureStringAll = getFeatures(data, featureStringAll,i ,clas)
-    #
-    # fileName = open(pathSave, 'a')
-    # np.savetxt(fileName, featureStringAll, fmt="%f")
-    #
-    # featureStringAll = np.zeros((60, 41)) # NORM
-    # names2 = ['T[sec]',  'F7',  'F3',  'F4',  'F8',  'T3',  'C3',  'Cz',  'C4',  'T4',  'T5',  'P3',  'Pz',  'P4',  'T6',  'O1',  'O2']
+    # featureStringAll = np.zeros((60, 31))
     # for i in range(1, 61):
-    #     path = "EEG_Data\\Norm\\" + str(i) + ".txt"
-    #     data = pd.read_csv(path, sep=" ", header=None, skiprows=2, names=names2)
+    #     path = "EEG_Data\\Депрессия\\Norm\\" + str(i) + ".txt"
+    #     data = pd.read_csv(path, sep=" ", header=None, skiprows=2, names=names)
+    #     data['className'] = [0 for i in range(len(data['T[sec]']))]  # 1 - больной , 0 - здоровый
     #
-    #     data['className'] = [0 for i in range(len(data['T[sec]']))]
+    #
+    #     # data['className'] = [0 for i in range(len(data['T[sec]']))]
     #     clas = [0]
-    #     featureStringAll = getFeatures(data, featureStringAll,i,clas)
+    #     featureStringAll = getFeatures(data, featureStringAll,i, clas)
     #
     # fileName = open(pathSave, 'a')
     # np.savetxt(fileName, featureStringAll, fmt="%f")
+    # fileName.close()
     #
-    # featureStringAll = np.zeros((50, 41)) # depress
-    # names2 = ['T[sec]',  'F7',  'F3',  'F4',  'F8',  'T3',  'C3',  'Cz',  'C4',  'T4',  'T5',  'P3',  'Pz',  'P4',  'T6',  'O1',  'O2']
-    # for i in range(1, 51):
-    #     path = "EEG_Data\\depress\\" + str(i) + ".txt"
-    #     data = pd.read_csv(path, sep=" ", header=None, skiprows=2, names=names2)
     #
-    #     data['className'] = [0 for i in range(len(data['T[sec]']))]
+    #
+    # featureStringAll = np.zeros((30, 31))
+    # for i in range(1, 31):
+    #     path = "EEG_Data\\prisoners_aggressive\\" + str(i) + ".txt"
+    #     data = pd.read_csv(path, sep=" ", header=None, skiprows=2, names=names)
+    #     data['className'] = [1 for i in range(len(data['T[sec]']))]  # 1 - больной , 0 - здоровый
+    #
+    #     # data['className'] = [0 for i in range(len(data['T[sec]']))]
     #     clas = [1]
-    #     featureStringAll = getFeatures(data, featureStringAll,i,clas)
+    #     featureStringAll = getFeatures(data, featureStringAll,i, clas)
+    #
     #
     # fileName = open(pathSave, 'a')
     # np.savetxt(fileName, featureStringAll, fmt="%f")
+    # fileName.close()
 
-    featureStringAll = np.zeros((7033, 41))  # Алкоголики
-    for i in range(1,7034):
-        path = "EEG_Features\\Алко\\" + str(i) + ".txt"
-        data = pd.read_csv(path, sep=" ", header=None,names = names )
 
-        data['className'] = [0 for i in range(len(data['T[sec]']))]
-        clas = [1]
-        featureStringAll = getFeatures(data, featureStringAll,i , clas)
+    featureStringAll = np.zeros((7033, 31))
+    for i in range(1, 7034):
+        path = "EEG_Data\\Алкоголики\\Алко\\" + str(i) + ".txt"
+        data = pd.read_csv(path, sep=" ", header=None, names=names)
+        data['className'] = [2 for i in range(len(data['T[sec]']))]  # 1 - больной , 0 - здоровый
 
-    fileName = open(pathSave, 'w')
-    np.savetxt(fileName, featureStringAll, fmt = '%.5f')
-    fileName.close()
-
-    featureStringAll = np.zeros((3921, 41)) # Не алкоголики
-    for i in range(1, 3922):
-        path = "EEG_Features\\Не алко\\" + str(i) + ".txt"
-        data = pd.read_csv(path, sep=" ", header=None,  names=names)
-
-        data['className'] = [0 for i in range(len(data['T[sec]']))]
-        clas = [0]
-        featureStringAll = getFeatures(data, featureStringAll,i ,clas)
+        # data['className'] = [0 for i in range(len(data['T[sec]']))]
+        clas = [2]
+        featureStringAll = getFeatures(data, featureStringAll,i,clas)
 
     fileName = open(pathSave, 'a')
-    np.savetxt(fileName, featureStringAll, fmt = '%.5f')
+    np.savetxt(fileName, featureStringAll, fmt="%f")
     fileName.close()
 
-    # featureStringAll = np.zeros((6, 40))  # Test
-    # names2 = ['T[sec]', 'F7', 'F3', 'F4', 'F8', 'T3', 'C3', 'Cz', 'C4', 'T4', 'T5', 'P3', 'Pz', 'P4', 'T6', 'O1', 'O2']
-    # for i in range(7000, 7006):
-    #     path = "EEG_Features\\Алко\\" + str(i) + ".txt"
-    #     data = pd.read_csv(path, sep=" ", header=None,  names=names2)
-    #
-    #     featureStringAll = getFeatures(data, featureStringAll,i - 7000)
-    #
-    # fileName = open("EEG_Features\\test.txt", 'w')
-    # np.savetxt(fileName, featureStringAll, fmt = '%.5f')
-    # fileName.close()
-    #
-    # featureStringAll = np.zeros((6, 40))  # Test
-    # names2 = ['T[sec]', 'F7', 'F3', 'F4', 'F8', 'T3', 'C3', 'Cz', 'C4', 'T4', 'T5', 'P3', 'Pz', 'P4', 'T6', 'O1', 'O2']
-    # for i in range(3001, 3007):
-    #     path = "EEG_Features\\Не алко\\" + str(i) + ".txt"
-    #     data = pd.read_csv(path, sep=" ", header=None, names=names2)
-    #
-    #     featureStringAll = getFeatures(data, featureStringAll, i - 3001)
-    #
-    # fileName = open("EEG_Features\\test.txt", 'a')
-    # np.savetxt(fileName, featureStringAll, fmt='%.5f')
-    # fileName.close()
+    featureStringAll = np.zeros((3921, 31))
+    for i in range(1, 3922):
+        path = "EEG_Data\\Алкоголики\\Не алко\\" + str(i) + ".txt"
+        data = pd.read_csv(path, sep=" ", header=None, names=names)
+        data['className'] = [0 for i in range(len(data['T[sec]']))]  # 1 - больной , 0 - здоровый
 
 
+        # data['className'] = [0 for i in range(len(data['T[sec]']))]
+        clas = [0]
+        featureStringAll = getFeatures(data, featureStringAll,i, clas)
+
+    fileName = open(pathSave, 'a')
+    np.savetxt(fileName, featureStringAll, fmt="%f")
+    fileName.close()
 
 
+    featureStringAll = np.zeros((76, 31))
+    for i in range(1, 77):
+        path = "EEG_Data\\Просто_здоровые_люди\\MAN\\" + str(i) + ".txt"
+        data = pd.read_csv(path, sep=" ", header=None, skiprows=2, names=names)
+        data['className'] = [0 for i in range(len(data['T[sec]']))]  # 1 - больной , 0 - здоровый
 
 
+        # data['className'] = [0 for i in range(len(data['T[sec]']))]
+        clas = [0]
+        featureStringAll = getFeatures(data, featureStringAll,i, clas)
 
+    fileName = open(pathSave, 'a')
+    np.savetxt(fileName, featureStringAll, fmt="%f")
+    fileName.close()
+
+
+    featureStringAll = np.zeros((103, 31))
+    for i in range(1, 104):
+        path = "EEG_Data\\Просто_здоровые_люди\\FEMALE\\" + str(i) + ".txt"
+        data = pd.read_csv(path, sep=" ", header=None, skiprows=2, names=names)
+        data['className'] = [0 for i in range(len(data['T[sec]']))]  # 1 - больной , 0 - здоровый
+
+        # data['className'] = [0 for i in range(len(data['T[sec]']))]
+        clas = [0]
+        featureStringAll = getFeatures(data, featureStringAll, i, clas)
+
+    fileName = open(pathSave, 'a')
+    np.savetxt(fileName, featureStringAll, fmt="%f")
+    fileName.close()
 

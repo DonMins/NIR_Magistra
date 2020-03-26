@@ -39,11 +39,11 @@ ans  = X_test1[:,countFeature]
 #
 model = Sequential()
 model.add(Dense(20000, input_dim=40, activation="relu"))
-model.add(Dense(1000, input_dim=40, activation="relu"))
+model.add(Dense(1000, activation="relu"))
 model.add(Dense(2, activation="sigmoid"))
 
 model.compile(loss="binary_crossentropy", optimizer="adam", metrics=['accuracy'])
-model.fit(X_train, Y_train, batch_size = 200, epochs = 20)
+model.fit(X_train, Y_train, batch_size = 200, epochs = 5)
 
 # model = load_model('fashion_mnist_dense.h5')
 
